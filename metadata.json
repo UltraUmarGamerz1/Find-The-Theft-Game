@@ -1,0 +1,5 @@
+{
+  "name": "Find the Thief Game",
+  "description": "A digital version of the classic King-Minister-Soldier-Thief game. A mobile-friendly, offline-capable game where players try to identify the thief among them. Features include customizable settings, multiple themes, language support, and local storage for game progress and user feedback.",
+  "requestFramePermissions": []
+}
