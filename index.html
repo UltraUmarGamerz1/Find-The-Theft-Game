@@ -1,421 +1,135 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>UA Calculator — Ultra Advance Calculator</title>
-<style>
-  /* ---------- Theme & base ---------- */
-  :root{
-    --bg:#f2f6ff; --panel:#ffffff; --accent:#007bff; --text:#111; --btn:#f1f5ff;
-    --glass-bg: rgba(255,255,255,0.12);
-    --font-stack: "Inter", "Segoe UI", Roboto, Arial, sans-serif;
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Find the Thief</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Cinzel+Decorative:wght@400;700;900&family=Kalam:wght@400;700&family=Orbitron:wght@400..900&family=Playfair+Display:wght@400;700&family=Press+Start+2P&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+      :root, [data-theme='wooden'] {
+        --bg-image: url('https://images.unsplash.com/photo-1590132338573-255d657a784d?q=80&w=1920&h=1080&fit=crop');
+        --btn-bg-image: none;
+        --font-family: 'Cinzel Decorative', cursive;
+        --text-color: #f5deb3; /* Wheat */
+        --text-stroke: -1px -1px 0 #3a2a1a, 1px -1px 0 #3a2a1a, -1px 1px 0 #3a2a1a, 1px 1px 0 #3a2a1a;
+        --bg-color: #4a3c2a;
+        --primary-color: #8b4513; /* SaddleBrown */
+        --secondary-color: #d2b48c; /* Tan */
+        --accent-color: #cd853f; /* Peru */
+        --glow-color: #ffd700;
+      }
+      [data-theme='modern'] {
+        --bg-image: url('https://picsum.photos/seed/scifi/1920/1080');
+        --btn-bg-image: none; /* Modern theme will use solid colors/gradients */
+        --font-family: 'Orbitron', sans-serif;
+        --text-color: #00ffff; /* Cyan */
+        --text-stroke: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+        --bg-color: #0d0d2b;
+        --primary-color: #1a1a4a;
+        --secondary-color: #4a4a7a;
+        --accent-color: #f0f; /* Magenta */
+        --glow-color: #00ffff;
+      }
+      [data-theme='minecraft'] {
+        --bg-image: url('https://images.unsplash.com/photo-1611905470431-7b56b1a1a5a7?q=80&w=1920&h=1080&fit=crop');
+        --btn-bg-image: none;
+        --font-family: 'Press Start 2P', cursive;
+        --text-color: #FFFFFF;
+        --text-stroke: -2px -2px 0 #3B2712, 2px -2px 0 #3B2712, -2px 2px 0 #3B2712, 2px 2px 0 #3B2712;
+        --bg-color: #8A6944; /* Dirt block */
+        --primary-color: #6B4D2D; /* Oak plank */
+        --secondary-color: #7F7F7F; /* Stone */
+        --accent-color: #3EBDC8; /* Diamond */
+        --glow-color: #FFD700; /* Gold */
+      }
+      [data-theme='gta5'] {
+        --bg-image: url('https://images.unsplash.com/photo-1542223616-740d5dff7f56?q=80&w=1920&h=1080&fit=crop');
+        --btn-bg-image: none;
+        --font-family: 'Anton', sans-serif;
+        --text-color: #FFFFFF;
+        --text-stroke: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+        --bg-color: #1a1a1a;
+        --primary-color: #3C3C3C;
+        --secondary-color: #4CAF50; /* Green */
+        --accent-color: #E91E63; /* Pink */
+        --glow-color: #4CAF50;
+      }
+      [data-theme='classic'] {
+        --bg-image: url('https://images.unsplash.com/photo-1596706917404-33d055152b86?q=80&w=1920&h=1080&fit=crop');
+        --btn-bg-image: none;
+        --font-family: 'Playfair Display', serif;
+        --text-color: #f5f5dc; /* Beige */
+        --text-stroke: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+        --bg-color: #333333;
+        --primary-color: #555555;
+        --secondary-color: #888888;
+        --accent-color: #b29600;
+        --glow-color: #b29600;
+      }
+      [data-theme='paper'] {
+        --bg-image: url('https://images.unsplash.com/photo-1549247796-6d03499a8a7a?q=80&w=1920&h=1080&fit=crop');
+        --btn-bg-image: none;
+        --font-family: 'Kalam', cursive;
+        --text-color: #2c3e50;
+        --text-stroke: none;
+        --bg-color: #fdf6e3;
+        --primary-color: #aed6f1;
+        --secondary-color: #d5dbdb;
+        --accent-color: #e74c3c;
+        --glow-color: #e74c3c;
+      }
+      [data-theme='real_life'] {
+        --bg-image: url('https://images.unsplash.com/photo-1505761671935-60b3a742750f?q=80&w=1920&h=1080&fit=crop');
+        --btn-bg-image: none;
+        --font-family: 'Roboto', sans-serif;
+        --text-color: #FFFFFF;
+        --text-stroke: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+        --bg-color: #2c3e50;
+        --primary-color: rgba(0, 0, 0, 0.5);
+        --secondary-color: rgba(255, 255, 255, 0.2);
+        --accent-color: #00aaff;
+        --glow-color: #00aaff;
+      }
+      body {
+        font-family: var(--font-family);
+        color: var(--text-color);
+        background-color: var(--bg-color);
+        background-image: var(--bg-image);
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+      }
+      .text-stroke {
+        text-shadow: var(--text-stroke);
+      }
+      .btn-glow {
+        animation: glow 1.5s infinite alternate;
+      }
+      @keyframes glow {
+        from {
+          box-shadow: 0 0 5px var(--glow-color), 0 0 10px var(--glow-color), 0 0 15px var(--glow-color);
+        }
+        to {
+          box-shadow: 0 0 10px var(--glow-color), 0 0 20px var(--glow-color), 0 0 30px var(--glow-color);
+        }
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/"
   }
-  .theme-default{ --bg:#f2f6ff; --panel:#fff; --accent:#007bff; --text:#111; --btn:#f1f5ff; --glass-bg: rgba(255,255,255,0.12); }
-  .theme-hacker{ --bg:#010203; --panel:#04120a; --accent:#00ff5a; --text:#c8ffd0; --btn:rgba(0,255,90,0.06); --glass-bg: rgba(0,0,0,0.28); }
-  .theme-iphone{ --bg:#f0f1f3; --panel:#ffffff; --accent:#ff9500; --text:#0b1226; --btn:#f6f7f9; --glass-bg: rgba(255,255,255,0.6); }
-  .theme-glass{ --bg:#e9f2ff; --panel: rgba(255,255,255,0.08); --accent:#4da3ff; --text:#0b1226; --btn: rgba(255,255,255,0.06); --glass-bg: rgba(255,255,255,0.08); }
-  .theme-neon{ --bg:#02040f; --panel:#061028; --accent:#00f5ff; --text:#c8ffee; --btn:#071824; --glass-bg: rgba(255,255,255,0.02); }
-  .theme-minecraft{ --bg:#d6d6c2; --panel:#efe6d6; --accent:#6aa84f; --text:#123510; --btn:#c9b38b; --glass-bg: rgba(255,255,255,0.06); }
-  .theme-future{ --bg:#071428; --panel:#08121f; --accent:#7c5cff; --text:#cfc9ff; --btn:#0b1230; --glass-bg: rgba(255,255,255,0.02); }
-
-  html,body{height:100%;margin:0;font-family:var(--font-stack);background:var(--bg);color:var(--text);display:flex;align-items:center;justify-content:center;padding:18px;}
-  .calc-wrap{width:420px;max-width:96vw;background:var(--panel);border-radius:16px;padding:12px;box-shadow:0 12px 40px rgba(2,6,23,0.12);position:relative;overflow:visible;}
-  .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-  .title{font-weight:800;color:var(--accent);letter-spacing:.6px;font-size:18px}
-  .menu-btn{background:none;border:none;font-size:22px;color:var(--accent);cursor:pointer}
-  .menu-popup{position:absolute;right:12px;top:48px;background:var(--panel);border-radius:10px;padding:8px;box-shadow:0 8px 26px rgba(0,0,0,0.12);display:none;z-index:90;width:260px}
-  .menu-popup button{display:block;width:100%;padding:10px;border-radius:8px;border:none;background:transparent;color:var(--text);text-align:left;margin:4px 0;cursor:pointer;font-weight:700}
-  .menu-popup button:hover{background:rgba(0,0,0,0.04)}
-
-  .display{width:100%;height:72px;border-radius:10px;padding:12px;background:var(--glass-bg);font-size:26px;text-align:right;overflow:auto;color:var(--accent);box-sizing:border-box;font-family:var(--font-stack);font-weight:700}
-  .sub{font-size:12px;color:rgba(0,0,0,0.45);text-align:right;margin-top:6px}
-
-  .buttons-area{position:relative;width:100%;height:520px;margin-top:12px;border-radius:12px;background:transparent}
-  .btn{
-    position:absolute; width:84px; height:56px; border-radius:12px; border:none; cursor:pointer;
-    display:flex;align-items:center;justify-content:center; font-weight:800; font-size:18px;
-    background:var(--btn); color:var(--text); box-shadow:0 8px 20px rgba(2,6,23,0.08);
-    user-select:none; touch-action:none;
-  }
-  .btn.operator{color:var(--accent)}
-  .btn.equal{background:var(--accent); color:#fff}
-  .btn.clear{background:#ff4d4d;color:#fff}
-  .btn.dragging{opacity:0.8;transform:scale(1.03);z-index:9999;border:2px dashed rgba(0,0,0,0.12)}
-  .btn.iphone{border-radius:999px; box-shadow:0 6px 12px rgba(0,0,0,0.08);}
-
-  .control-row{display:flex;gap:8px;justify-content:flex-end;margin-top:8px;display:none}
-  .control-row.show{display:flex}
-  .control-row button{padding:8px 12px;border-radius:10px;border:none;cursor:pointer;font-weight:700}
-  .control-save{background:var(--accent);color:#fff}
-  .control-reset{background:#ddd;color:#111}
-  .control-add{background:#34a853;color:#fff}
-  .control-remove{background:#e67e22;color:#fff}
-  .control-rename{background:#6c5ce7;color:#fff}
-  .control-edit{background:#2b90d9;color:#fff}
-
-  .adv-toggle{margin-top:8px;display:flex;justify-content:flex-end}
-  .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.48);z-index:200;align-items:center;justify-content:center}
-  .popup{background:var(--panel);padding:14px;border-radius:12px;width:360px;box-shadow:0 16px 40px rgba(0,0,0,0.3)}
-  .popup h3{margin:0 0 8px;color:var(--accent)}
-  .popup button{margin-top:10px;padding:10px;border-radius:8px;border:none;background:var(--accent);color:#fff;cursor:pointer}
-  .row{display:flex;gap:8px;margin-top:10px}
-  input[type="text"], input[type="number"], select, textarea {width:100%; padding:8px;border-radius:8px;border:1px solid #ddd; box-sizing:border-box}
-
-  .chat-box{height:220px; overflow:auto; border:1px solid #eee; border-radius:8px; padding:8px; background:#fafafa;}
-  .chat-input{display:flex; gap:8px; margin-top:8px;}
-  .chat-input textarea{flex:1;resize:none;height:52px}
-  .small-note{font-size:12px;color:rgba(0,0,0,0.45);margin-top:6px}
-
-  /* responsive tweaks */
-  @media(max-width:460px){
-    .btn{width:72px;height:52px;font-size:16px}
-    .display{height:64px;font-size:22px}
-    .calc-wrap{width:96vw}
-  }
-</style>
+}
+</script>
 </head>
-<body>
-
-<div class="calc-wrap" id="calcRoot" role="application" aria-label="UA Calculator">
-  <div class="topbar">
-    <div class="title">UA Calculator</div>
-    <div>
-      <button id="menuBtn" class="menu-btn" aria-haspopup="true" aria-controls="menu">⋮</button>
-      <div id="menu" class="menu-popup" role="menu" aria-hidden="true">
-        <button id="historyBtn">📜 History</button>
-        <button id="clearHistoryBtn">🗑 Clear History</button>
-        <button id="themesBtn">🎨 Themes</button>
-        <button id="feedbackBtn">✉ Send Feedback</button>
-        <button id="helpBtn">❓ Help & Chat</button>
-        <button id="advancedEntryBtn">🔒 Advanced Mode</button>
-        <button id="customToggleBtn">⚙ Custom Controls: OFF</button>
-        <button id="currencyBtn">💱 Currency Converter</button>
-        <button id="unitBtn">📐 Unit Converter</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="display" class="display" role="status">0</div>
-  <div id="sub" class="sub"></div>
-
-  <div class="buttons-area" id="area" aria-live="polite"></div>
-
-  <div class="control-row" id="controls">
-    <button id="resetBtn" class="control-reset">Reset Layout</button>
-    <button id="saveBtn" class="control-save">Save Layout</button>
-    <!-- admin controls appended dynamically -->
-  </div>
-
-  <div class="adv-toggle">
-    <button id="toggleAdvBtn" style="padding:8px;border-radius:8px;border:none;cursor:pointer">Toggle Advanced</button>
-  </div>
-</div>
-
-<!-- overlays -->
-<div class="overlay" id="overlay"><div class="popup" id="popupContent"></div></div>
-
-<!-- currency -->
-<div class="overlay" id="currencyOverlay"><div class="popup" id="currencyPopup">
-  <h3>Currency Converter</h3>
-  <input id="curAmount" type="number" placeholder="Amount" />
-  <div class="row">
-    <select id="fromCur"></select>
-    <select id="toCur"></select>
-  </div>
-  <div class="row">
-    <button id="convBtn">Convert</button>
-    <button id="closeCur" style="background:#ddd;color:#111">Close</button>
-  </div>
-  <div id="curRes" style="margin-top:8px;font-weight:700"></div>
-</div></div>
-
-<!-- unit -->
-<div class="overlay" id="unitOverlay"><div class="popup" id="unitPopup">
-  <h3>Unit Converter</h3>
-  <div class="row">
-    <select id="unitCategory">
-      <option value="length">Length</option>
-      <option value="weight">Weight</option>
-      <option value="temperature">Temperature</option>
-      <option value="volume">Volume</option>
-      <option value="speed">Speed</option>
-      <option value="area">Area</option>
-      <option value="time">Time</option>
-    </select>
-  </div>
-  <div class="row" style="margin-top:8px">
-    <input id="unitAmount" type="number" placeholder="Amount" />
-  </div>
-  <div class="row" style="margin-top:8px">
-    <select id="fromUnit"></select>
-    <select id="toUnit"></select>
-  </div>
-  <div class="row">
-    <button id="unitConvBtn">Convert</button>
-    <button id="closeUnit" style="background:#ddd;color:#111">Close</button>
-  </div>
-  <div id="unitRes" style="margin-top:8px;font-weight:700"></div>
-</div></div>
-
-<script>
-/* ---------------- State & constants ---------------- */
-const API_URL = "https://v6.exchangerate-api.com/v6/74e63dfb01cee56e37f76311/latest/USD";
-const GPLINK = "https://gplinks.co/MuCStB";
-const ADV_PASS = "22002211@@";    // advanced popup pass
-const UADMIN_CODE = "22112211L@@"; // Ultra Admin secret entered in chat
-
-const area = document.getElementById('area');
-const display = document.getElementById('display');
-const sub = document.getElementById('sub');
-const menuBtn = document.getElementById('menuBtn');
-const menu = document.getElementById('menu');
-const customToggleBtn = document.getElementById('customToggleBtn');
-const controls = document.getElementById('controls');
-const saveBtn = document.getElementById('saveBtn');
-const resetBtn = document.getElementById('resetBtn');
-const historyBtn = document.getElementById('historyBtn');
-const clearHistoryBtn = document.getElementById('clearHistoryBtn');
-const themesBtn = document.getElementById('themesBtn');
-const feedbackBtn = document.getElementById('feedbackBtn');
-const helpBtn = document.getElementById('helpBtn');
-const currencyBtn = document.getElementById('currencyBtn');
-const unitBtn = document.getElementById('unitBtn');
-const advancedEntryBtn = document.getElementById('advancedEntryBtn');
-const overlay = document.getElementById('overlay');
-const popupContent = document.getElementById('popupContent');
-const currencyOverlay = document.getElementById('currencyOverlay');
-const fromCur = document.getElementById('fromCur');
-const toCur = document.getElementById('toCur');
-const curAmount = document.getElementById('curAmount');
-const convBtn = document.getElementById('convBtn');
-const closeCur = document.getElementById('closeCur');
-const curRes = document.getElementById('curRes');
-const toggleAdvBtn = document.getElementById('toggleAdvBtn');
-
-const unitOverlay = document.getElementById('unitOverlay');
-const unitCategory = document.getElementById('unitCategory');
-const unitAmount = document.getElementById('unitAmount');
-const fromUnit = document.getElementById('fromUnit');
-const toUnit = document.getElementById('toUnit');
-const unitConvBtn = document.getElementById('unitConvBtn');
-const closeUnit = document.getElementById('closeUnit');
-const unitRes = document.getElementById('unitRes');
-
-let customMode = false;
-let dragState = null;
-let historyArr = JSON.parse(localStorage.getItem('ua_history')||'[]');
-let degMode = true;
-let advancedShown = false;
-let adminUnlocked = localStorage.getItem('ua_admin') === '1'; // UAdmin flag (Ultra Advance Mode)
-let unlockedAdvanced = localStorage.getItem('ua_unlocked') === '1'; // regular Advanced
-
-/* ---------- default buttons config ---------- */
-const defaultCfg = [
-  {id:'ac', label:'AC', x:12, y:12, cls:'clear'},
-  {id:'percent', label:'%', x:108, y:12, cls:'operator'},
-  {id:'back', label:'⌫', x:204, y:12, cls:'operator'},
-  {id:'div', label:'÷', x:300, y:12, cls:'operator'},
-
-  {id:'b7', label:'7', x:12, y:82, cls:''},
-  {id:'b8', label:'8', x:108, y:82, cls:''},
-  {id:'b9', label:'9', x:204, y:82, cls:''},
-  {id:'mul', label:'×', x:300, y:82, cls:'operator'},
-
-  {id:'b4', label:'4', x:12, y:152, cls:''},
-  {id:'b5', label:'5', x:108, y:152, cls:''},
-  {id:'b6', label:'6', x:204, y:152, cls:''},
-  {id:'sub', label:'−', x:300, y:152, cls:'operator'},
-
-  {id:'b1', label:'1', x:12, y:222, cls:''},
-  {id:'b2', label:'2', x:108, y:222, cls:''},
-  {id:'b3', label:'3', x:204, y:222, cls:''},
-  {id:'add', label:'+', x:300, y:222, cls:'operator'},
-
-  {id:'b0', label:'0', x:12, y:292, cls:''},
-  {id:'b00', label:'00', x:108, y:292, cls:''},
-  {id:'eq', label:'=', x:204, y:292, cls:'equal'},
-  {id:'dot', label:'.', x:300, y:292, cls:'operator'},
-
-  // advanced (hidden until toggled)
-  {id:'fact', label:'!', x:12, y:362, cls:'adv'},
-  {id:'deg', label:'Deg', x:108, y:362, cls:'adv'},
-  {id:'sin', label:'sin', x:204, y:362, cls:'adv'},
-  {id:'cos', label:'cos', x:300, y:362, cls:'adv'},
-  {id:'tan', label:'tan', x:12, y:432, cls:'adv'},
-  {id:'inv', label:'Inv', x:108, y:432, cls:'adv'},
-  {id:'e', label:'e', x:204, y:432, cls:'adv'},
-  {id:'ln', label:'ln', x:300, y:432, cls:'adv'},
-  {id:'log', label:'log', x:12, y:502, cls:'adv'},
-  {id:'pow', label:'^', x:108, y:502, cls:'adv'},
-];
-
-/* ---------- build UI ---------- */
-function buildButtons(){
-  area.innerHTML = '';
-  let cfg = defaultCfg;
-  const saved = localStorage.getItem('ua_layout');
-  if(saved){
-    try{ const parsed = JSON.parse(saved); if(Array.isArray(parsed) && parsed.length) cfg = parsed; }catch(e){}
-  }
-  cfg.forEach(b=>{
-    const btn = document.createElement('button');
-    btn.className = 'btn';
-    if(b.cls) btn.classList.add(b.cls);
-    if(document.documentElement.classList.contains('theme-iphone')) btn.classList.add('iphone');
-    btn.id = b.id;
-    btn.textContent = b.label;
-    btn.style.left = (b.x)+'px';
-    btn.style.top = (b.y)+'px';
-    btn.dataset.role = b.cls || '';
-    btn.dataset.posX = b.x;
-    btn.dataset.posY = b.y;
-    btn.addEventListener('pointerdown', onPointerDown);
-    btn.addEventListener('click', onButtonClick);
-    area.appendChild(btn);
-  });
-  updateAdvancedVisibility();
-  if(adminUnlocked) ensureAdminUI();
-}
-
-/* pointer drag for custom controls */
-function onPointerDown(e){
-  if(!customMode) return;
-  e.preventDefault();
-  const el = e.currentTarget;
-  el.setPointerCapture(e.pointerId);
-  const rect = el.getBoundingClientRect();
-  const parentRect = area.getBoundingClientRect();
-  dragState = {
-    el,
-    offsetX: e.clientX - rect.left,
-    offsetY: e.clientY - rect.top,
-    parentLeft: parentRect.left,
-    parentTop: parentRect.top
-  };
-  el.classList.add('dragging');
-  window.addEventListener('pointermove', onPointerMove);
-  window.addEventListener('pointerup', onPointerUp);
-}
-function onPointerMove(e){
-  if(!dragState) return;
-  e.preventDefault();
-  const nx = e.clientX - dragState.parentLeft - dragState.offsetX;
-  const ny = e.clientY - dragState.parentTop - dragState.offsetY;
-  const parentRect = area.getBoundingClientRect();
-  const elRect = dragState.el.getBoundingClientRect();
-  const maxX = parentRect.width - elRect.width - 6;
-  const maxY = parentRect.height - elRect.height - 6;
-  const clampedX = Math.max(6, Math.min(maxX, nx));
-  const clampedY = Math.max(6, Math.min(maxY, ny));
-  dragState.el.style.left = clampedX + 'px';
-  dragState.el.style.top = clampedY + 'px';
-}
-function onPointerUp(e){
-  if(!dragState) return;
-  const el = dragState.el;
-  el.classList.remove('dragging');
-  const left = parseInt(el.style.left,10);
-  const top = parseInt(el.style.top,10);
-  el.dataset.posX = left;
-  el.dataset.posY = top;
-  window.removeEventListener('pointermove', onPointerMove);
-  window.removeEventListener('pointerup', onPointerUp);
-  dragState = null;
-}
-
-/* click behavior */
-function onButtonClick(e){
-  if(customMode) return; // when custom mode ON, don't handle actions
-  const id = e.currentTarget.id;
-  handleKey(id);
-}
-
-/* calculator logic */
-function handleKey(id){
-  if(id==='ac'){ display.textContent='0'; sub.textContent=''; return; }
-  if(id==='back'){ let t=display.textContent; display.textContent = t.length>1? t.slice(0,-1): '0'; return; }
-  if(id==='percent'){ try{ const val = Number(display.textContent)/100; display.textContent = String(val); }catch(e){display.textContent='Error'} return; }
-  if(id==='eq'){ evaluate(); return; }
-
-  if(id==='fact'){ try{ let n=Number(display.textContent); if(!Number.isInteger(n)||n<0){ display.textContent='Error'; return;} let r=1; for(let i=2;i<=n;i++) r*=i; display.textContent=String(r); }catch(e){display.textContent='Error'} return; }
-  if(id==='deg'){ degMode = !degMode; const btn=document.getElementById('deg'); if(btn) btn.textContent = degMode ? 'Deg' : 'Rad'; return; }
-  if(['sin','cos','tan'].includes(id)){ try{ let v=Number(display.textContent); if(degMode) v = v*Math.PI/180; let out=0; if(id==='sin') out=Math.sin(v); if(id==='cos') out=Math.cos(v); if(id==='tan') out=Math.tan(v); display.textContent = String(Number(out.toFixed(10))); }catch(e){display.textContent='Error'} return; }
-  if(id==='inv'){ const btn=document.getElementById('inv'); if(btn) btn.textContent = btn.textContent==='Inv' ? 'Inv✓' : 'Inv'; return; }
-  if(id==='e'){ display.textContent = String(Math.E); return; }
-  if(id==='ln'){ try{ display.textContent = String(Math.log(Number(display.textContent))); }catch(e){display.textContent='Error'} return; }
-  if(id==='log'){ try{ display.textContent = String(Math.log10 ? Math.log10(Number(display.textContent)) : Math.log(Number(display.textContent))/Math.LN10);}catch(e){display.textContent='Error'} return; }
-  if(id==='pow'){ display.textContent += '**'; return; }
-
-  // append numbers/operators
-  const btn = document.getElementById(id);
-  if(!btn) return;
-  const v = btn.textContent;
-  if(display.textContent === '0') display.textContent = v;
-  else display.textContent += v;
-}
-
-function evaluate(){
-  try{
-    const expr = display.textContent.replace(/×/g,'*').replace(/−/g,'-').replace(/÷/g,'/');
-    if(/[^0-9+\-*/().%eE\s*]/.test(expr)){ display.textContent='Error'; return; }
-    const res = Function('"use strict"; return ('+expr+')')();
-    display.textContent = (res===Infinity||res===-Infinity||isNaN(res))? 'Error' : String(res);
-    pushHistory(expr + ' = ' + display.textContent);
-  }catch(e){ display.textContent='Error'; }
-}
-function pushHistory(text){
-  historyArr.unshift(text);
-  if(historyArr.length>200) historyArr.pop();
-  localStorage.setItem('ua_history', JSON.stringify(historyArr));
-}
-
-/* ---------- Custom Controls toggle (available only if Advanced unlocked) ---------- */
-customToggleBtn.addEventListener('click', ()=>{
-  // custom mode allowed only when advancedShown (regular advanced) OR adminUnlocked (UAdmin)
-  if(!(advancedShown || adminUnlocked)){
-    alert('Advanced features are locked. Unlock via 3-dots → Advanced Mode first.');
-    return;
-  }
-  customMode = !customMode;
-  customToggleBtn.textContent = `⚙ Custom Controls: ${customMode ? 'ON' : 'OFF'}`;
-  controls.classList.toggle('show', customMode);
-  // if admin unlocked, show extra admin controls in controls row
-  refreshControlsRow();
-});
-
-/* save & reset layout */
-saveBtn.addEventListener('click', ()=>{
-  const nodes = Array.from(area.querySelectorAll('.btn'));
-  const cfg = nodes.map(n=>({
-    id: n.id,
-    label: n.textContent,
-    x: parseInt(n.style.left || n.dataset.posX || 0,10),
-    y: parseInt(n.style.top || n.dataset.posY || 0,10),
-    cls: n.dataset.role || ''
-  }));
-  localStorage.setItem('ua_layout', JSON.stringify(cfg));
-  customMode = false;
-  customToggleBtn.textContent = '⚙ Custom Controls: OFF';
-  controls.classList.remove('show');
-  refreshControlsRow();
-  alert('Layout saved — Custom Controls OFF');
-});
-resetBtn.addEventListener('click', ()=>{
-  if(!confirm('Reset layout to default?')) return;
-  localStorage.removeItem('ua_layout');
-  buildButtons();
-});
-
-/* ---------- Menus: History / Themes / Help / Feedback ---------- */
-historyBtn.addEventListener('click', ()=>{
-  const list = historyArr.length ? historyArr.map(h=>`<div style="margin:6px 0">${esc(h)}</div>`).join('') : '<div style="color:#777">No history yet</div>';
-  showPopup(`<h3>History</h3><div style="max-height:300px;overflow:auto">${list}</div><div style="display:flex;gap:8px;margin-top:8px"><button onclick="clearHistory();closePopup()">Clear History</button><button onclick="closePopup()">Close</button></div>`);
-  showMenu(false);
-});
-function clearHistory(){ historyArr=[]; localStorage.removeItem('ua_history'); alert('History cleared'); }
-
-themesBtn.addEventListener('click', ()=> {
-  const html = `<h3>Themes</h3>
-  <div style="display:flex;gap:8px;flex-wrap:wrap">
-    <button onclick="setTheme('theme-default')">Defa
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>

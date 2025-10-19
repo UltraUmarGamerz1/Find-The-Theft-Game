@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { View } from './types';
-import type { Settings, GameState, Suggestion, BugReport, Player, Role, RolePoints, Language, Theme } from './types';
-import { DEFAULT_SETTINGS, DEFAULT_ROLE_POINTS, TRANSLATIONS, SOUNDS } from './constants';
+import type { Settings, GameState, Suggestion, BugReport, Player, Role, MultiplayerSession, MultiplayerPlayer } from './types';
+import { DEFAULT_SETTINGS, DEFAULT_ROLE_POINTS, TRANSLATIONS, SOUNDS, CORE_ROLES, EXTRA_ROLES } from './constants';
 import Dashboard from './screens/Dashboard';
 import SettingsScreen from './screens/Settings';
 import SuggestionsScreen from './screens/Suggestions';
@@ -10,6 +10,9 @@ import PlayerSetup from './screens/PlayerSetup';
 import RoleAssignment from './screens/RoleAssignment';
 import Gameplay from './screens/Gameplay';
 import Results from './screens/Results';
+import MultiplayerLogin from './screens/MultiplayerLogin';
+import MultiplayerLobby from './screens/MultiplayerLobby';
+import Tutorial from './screens/Tutorial';
 
 // --- Context ---
 interface AppContextType {
@@ -21,11 +24,23 @@ interface AppContextType {
     resetGame: () => void;
     suggestions: Suggestion[];
     addSuggestion: (text: string) => void;
+    removeSuggestion: (id: string) => void;
     bugReports: BugReport[];
     addBugReport: (text: string, screenshot?: string) => void;
+    removeBugReport: (id: string) => void;
     t: (key: string) => string;
     playSound: (sound: keyof typeof SOUNDS) => void;
     vibrate: () => void;
+    coins: number;
+    setCoins: React.Dispatch<React.SetStateAction<number>>;
+    isAdminMode: boolean;
+    setIsAdminMode: React.Dispatch<React.SetStateAction<boolean>>;
+    // Multiplayer state
+    multiplayerName: string;
+    setMultiplayerName: React.Dispatch<React.SetStateAction<string>>;
+    session: MultiplayerSession | null;
+    setSession: React.Dispatch<React.SetStateAction<MultiplayerSession | null>>;
+    multiplayerPlayer: MultiplayerPlayer | null;
 }
 
 export const AppContext = React.createContext<AppContextType | null>(null);
@@ -61,6 +76,15 @@ export default function App() {
     const [settings, setSettings] = useLocalStorage<Settings>('settings', DEFAULT_SETTINGS);
     const [suggestions, setSuggestions] = useLocalStorage<Suggestion[]>('suggestions', []);
     const [bugReports, setBugReports] = useLocalStorage<BugReport[]>('bug-reports', []);
+    const [coins, setCoins] = useLocalStorage<number>('coins', 0);
+    const [isAdminMode, setIsAdminMode] = useState(false);
+    const [multiplayerName, setMultiplayerName] = useLocalStorage<string>('multiplayerName', '');
+    const [session, setSession] = useState<MultiplayerSession | null>(null);
+
+    const multiplayerPlayer = useMemo<MultiplayerPlayer | null>(() => {
+        if (!multiplayerName) return null;
+        return { id: multiplayerName, name: multiplayerName }; // Simple ID for now
+    }, [multiplayerName]);
     
     const initialGameState: GameState = useMemo(() => ({
         players: [],
@@ -86,6 +110,56 @@ export default function App() {
             }
         });
     }, []);
+
+    useEffect(() => {
+        if (isAdminMode) {
+            setCoins(9999);
+        }
+    }, [isAdminMode, setCoins]);
+
+    // Real-time session sync using storage event
+    useEffect(() => {
+        const handleStorageChange = (event: StorageEvent) => {
+            if (session && event.key === `session-${session.gameId}` && event.newValue) {
+                const updatedSession: MultiplayerSession = JSON.parse(event.newValue);
+                setSession(updatedSession);
+
+                // If host starts the game, all players transition
+                if (updatedSession.status === 'playing' && session.status === 'waiting') {
+                    // Initialize game state from session
+                    const gamePlayers: Player[] = updatedSession.players.map(p => ({
+                        id: p.id,
+                        name: p.name,
+                        role: null,
+                        score: 0,
+                        isAI: false,
+                    }));
+
+                    const rolesForGame: Role[] = [...CORE_ROLES, ...EXTRA_ROLES.slice(0, gamePlayers.length - CORE_ROLES.length)];
+                    const shuffledRoles = rolesForGame.sort(() => Math.random() - 0.5);
+
+                    const playersWithRoles = gamePlayers.map((player, index) => ({
+                        ...player,
+                        role: shuffledRoles[index]
+                    }));
+
+                    setGameState(prev => ({
+                        ...prev,
+                        players: playersWithRoles,
+                        currentRound: 1,
+                        totalRounds: 10, // Default for now
+                    }));
+                    setView(View.ROLE_ASSIGNMENT);
+                }
+            }
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+        };
+    }, [session, setGameState, setSession]);
+
 
     useEffect(() => {
         document.documentElement.setAttribute('data-theme', settings.theme);
@@ -127,22 +201,27 @@ export default function App() {
         const newSuggestion: Suggestion = { id: Date.now().toString(), text, timestamp: Date.now() };
         setSuggestions(prev => [newSuggestion, ...prev]);
     }, [setSuggestions]);
+    
+    const removeSuggestion = useCallback((id: string) => {
+        setSuggestions(prev => prev.filter(s => s.id !== id));
+    }, [setSuggestions]);
 
     const addBugReport = useCallback((text: string, screenshot?: string) => {
         const newBugReport: BugReport = { id: Date.now().toString(), text, screenshot, timestamp: Date.now() };
         setBugReports(prev => [newBugReport, ...prev]);
     }, [setBugReports]);
 
-    const resetGame = useCallback(() => {
-        const coreRoles: Role[] = ['King', 'Minister', 'Soldier', 'Thief'];
-        const extraRoles: Role[] = ['Laundry', 'Cleaner'];
+    const removeBugReport = useCallback((id: string) => {
+        setBugReports(prev => prev.filter(b => b.id !== id));
+    }, [setBugReports]);
 
-        const rolesForGame: Role[] = [...coreRoles];
+    const resetGame = useCallback(() => {
+        const rolesForGame: Role[] = [...CORE_ROLES];
         const numPlayers = gameState.players.length;
-        const numExtraRoles = numPlayers > 0 ? numPlayers - coreRoles.length : 0;
+        const numExtraRoles = numPlayers > 0 ? numPlayers - CORE_ROLES.length : 0;
 
         if (numExtraRoles > 0) {
-            rolesForGame.push(...extraRoles.slice(0, numExtraRoles));
+            rolesForGame.push(...EXTRA_ROLES.slice(0, numExtraRoles));
         }
         const shuffledRoles = rolesForGame.sort(() => Math.random() - 0.5);
 
@@ -157,7 +236,7 @@ export default function App() {
             rolePoints: prev.rolePoints,
             totalRounds: prev.totalRounds
         }));
-    }, [gameState.players, initialGameState]);
+    }, [gameState.players, initialGameState, setGameState]);
     
     const t = useCallback((key: string): string => {
         return TRANSLATIONS[settings.language][key] || key;
@@ -172,12 +251,23 @@ export default function App() {
         resetGame,
         suggestions,
         addSuggestion,
+        removeSuggestion,
         bugReports,
         addBugReport,
+        removeBugReport,
         t,
         playSound,
-        vibrate
-    }), [view, settings, updateSettings, gameState, setGameState, resetGame, suggestions, addSuggestion, bugReports, addBugReport, t, playSound, vibrate]);
+        vibrate,
+        coins,
+        setCoins,
+        isAdminMode,
+        setIsAdminMode,
+        multiplayerName,
+        setMultiplayerName,
+        session,
+        setSession,
+        multiplayerPlayer
+    }), [settings, updateSettings, gameState, resetGame, suggestions, removeSuggestion, bugReports, removeBugReport, t, playSound, vibrate, coins, isAdminMode, multiplayerName, session, multiplayerPlayer, addSuggestion, addBugReport, setGameState, setCoins, setIsAdminMode, setMultiplayerName, setSession]);
 
     const renderView = () => {
         switch (view) {
@@ -197,6 +287,12 @@ export default function App() {
                 return <Gameplay />;
             case View.RESULTS:
                  return <Results />;
+            case View.MULTIPLAYER_LOGIN:
+                return <MultiplayerLogin />;
+            case View.MULTIPLAYER_LOBBY:
+                return <MultiplayerLobby />;
+            case View.TUTORIAL:
+                return <Tutorial />;
             default:
                 return <Dashboard />;
         }
@@ -204,8 +300,18 @@ export default function App() {
 
     return (
         <AppContext.Provider value={contextValue}>
-            <div className="w-full h-screen overflow-hidden bg-black/50 text-[var(--text-color)]">
-                {renderView()}
+            <div className="w-full h-screen overflow-hidden bg-black/50 text-[var(--text-color)] relative">
+                {isAdminMode && (
+                    <div 
+                        className="absolute top-0 left-0 right-0 bg-red-800 text-white text-center py-1 z-[100] text-sm font-bold animate-pulse"
+                        style={{ fontFamily: 'sans-serif', letterSpacing: '1px' }}
+                    >
+                        ADMIN MODE ACTIVE
+                    </div>
+                )}
+                <div className={`w-full h-full ${isAdminMode ? 'pt-6' : ''}`}>
+                    {renderView()}
+                </div>
             </div>
         </AppContext.Provider>
     );

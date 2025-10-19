@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { AppContext } from '../App';
 import { View } from '../types';
 import type { Player } from '../types';
@@ -12,8 +12,36 @@ const RoleAssignment: React.FC = () => {
   const [activePlayer, setActivePlayer] = useState<Player | null>(null);
 
   if (!context) return null;
-  const { gameState, setView, playSound, t } = context;
+  const { gameState, setView, playSound, t, isAdminMode } = context;
   const { players } = gameState;
+
+  const allRevealed = revealed.size === players.length;
+
+  useEffect(() => {
+    const aiPlayers = players.filter(p => p.isAI);
+    if (aiPlayers.length > 0) {
+      let delay = 500; // Initial delay
+      aiPlayers.forEach(aiPlayer => {
+        if (!revealed.has(aiPlayer.id)) {
+          setTimeout(() => {
+            setRevealed(prev => new Set(prev).add(aiPlayer.id));
+            playSound('click'); // Play a subtle sound for AI reveal
+          }, delay);
+          delay += 750; // Stagger the reveals
+        }
+      });
+    }
+  }, [players, playSound, revealed]);
+
+  useEffect(() => {
+    if (allRevealed && players.length > 0) {
+      const timer = setTimeout(() => {
+        setView(View.GAMEPLAY);
+      }, 2500); // 2.5 second delay before starting
+
+      return () => clearTimeout(timer); // Cleanup on unmount
+    }
+  }, [allRevealed, players.length, setView]);
 
   const handleReveal = (player: Player) => {
     playSound('reveal');
@@ -26,11 +54,9 @@ const RoleAssignment: React.FC = () => {
     }
     setActivePlayer(null);
   };
-  
-  const allRevealed = revealed.size === players.length;
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center p-4">
+    <div className="w-full h-full flex flex-col items-center justify-start p-4 pt-8 overflow-y-auto">
       <h1 className="text-5xl font-bold text-stroke text-center mb-8">{t('Reveal Roles')}</h1>
       
       <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
@@ -40,11 +66,11 @@ const RoleAssignment: React.FC = () => {
             <ThemedButton 
               variant="secondary"
               onClick={() => handleReveal(player)}
-              disabled={revealed.has(player.id)}
-              className={`w-28 h-40 text-6xl flex items-center justify-center transition-colors ${revealed.has(player.id) ? 'opacity-50 !bg-gray-600' : ''}`}
+              disabled={player.isAI || revealed.has(player.id)}
+              className={`w-28 h-40 text-6xl flex items-center justify-center transition-colors ${revealed.has(player.id) ? 'opacity-50 !bg-gray-600' : ''} ${player.isAI ? 'cursor-not-allowed' : ''}`}
               aria-label={`${t('Select Paper')} for ${player.name}`}
             >
-              {revealed.has(player.id) ? '✔' : '🃏'}
+              {isAdminMode && player.role ? ROLE_ICONS[player.role] : (revealed.has(player.id) ? '✔' : (player.isAI ? '🤖' : '🃏'))}
             </ThemedButton>
           </div>
         ))}
@@ -53,9 +79,7 @@ const RoleAssignment: React.FC = () => {
       {allRevealed && (
         <div className="mt-12 text-center animate-pulse">
             <p className="text-3xl text-stroke mb-4">{t('All roles revealed!')}</p>
-            <ThemedButton variant="primary" onClick={() => setView(View.GAMEPLAY)} sound="win">
-              {t('Start Round')} {gameState.currentRound}
-            </ThemedButton>
+             <p className="text-2xl text-stroke">{`${t('Start Round')} ${gameState.currentRound}...`}</p>
         </div>
       )}
 

@@ -20,7 +20,7 @@ const SettingsScreen: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center p-4">
+    <div className="w-full h-full flex flex-col items-center justify-start p-4 pt-8 overflow-y-auto">
       <div className="bg-black/60 p-8 rounded-2xl max-w-lg w-full space-y-4 border-2 border-[var(--accent-color)]">
         <h1 className="text-5xl font-bold text-stroke text-center mb-6">{t('Settings')}</h1>
 
@@ -38,6 +38,15 @@ const SettingsScreen: React.FC = () => {
             </ThemedButton>
             <ThemedButton variant="secondary" onClick={() => handleThemeChange('gta5')} className={settings.theme === 'gta5' ? 'border-4 border-[var(--glow-color)]' : ''}>
               {t('GTA 5')}
+            </ThemedButton>
+            <ThemedButton variant="secondary" onClick={() => handleThemeChange('classic')} className={settings.theme === 'classic' ? 'border-4 border-[var(--glow-color)]' : ''}>
+              {t('Classic')}
+            </ThemedButton>
+            <ThemedButton variant="secondary" onClick={() => handleThemeChange('paper')} className={settings.theme === 'paper' ? 'border-4 border-[var(--glow-color)]' : ''}>
+              {t('Paper')}
+            </ThemedButton>
+            <ThemedButton variant="secondary" onClick={() => handleThemeChange('real_life')} className={settings.theme === 'real_life' ? 'border-4 border-[var(--glow-color)]' : ''}>
+              {t('Real Life')}
             </ThemedButton>
           </div>
         </div>

@@ -6,10 +6,13 @@ export enum View {
   PLAYER_SETUP,
   ROLE_ASSIGNMENT,
   GAMEPLAY,
-  RESULTS
+  RESULTS,
+  MULTIPLAYER_LOGIN,
+  MULTIPLAYER_LOBBY,
+  TUTORIAL,
 }
 
-export type Theme = 'wooden' | 'modern' | 'minecraft' | 'gta5';
+export type Theme = 'wooden' | 'modern' | 'minecraft' | 'gta5' | 'classic' | 'paper' | 'real_life';
 export type Language = 'en' | 'ur' | 'hi' | 'ro';
 
 export interface Settings {
@@ -20,7 +23,7 @@ export interface Settings {
   language: Language;
 }
 
-export const ROLES = ['King', 'Minister', 'Soldier', 'Thief', 'Laundry', 'Cleaner'] as const;
+export const ROLES = ['King', 'Minister', 'Soldier', 'Thief', 'Laundry', 'Cleaner', 'Chef', 'Gardener', 'Prince', 'Queen'] as const;
 export type Role = typeof ROLES[number];
 
 export interface Player {
@@ -28,6 +31,7 @@ export interface Player {
   name: string;
   role: Role | null;
   score: number;
+  isAI: boolean;
 }
 
 export interface RolePoints {
@@ -37,6 +41,10 @@ export interface RolePoints {
   Thief: number;
   Laundry: number;
   Cleaner: number;
+  Chef: number;
+  Gardener: number;
+  Prince: number;
+  Queen: number;
 }
 
 export interface GameState {
@@ -58,4 +66,19 @@ export interface BugReport {
   text: string;
   screenshot?: string; // base64 string
   timestamp: number;
+}
+
+// --- Multiplayer Types ---
+export interface MultiplayerPlayer {
+  id: string;
+  name: string;
+}
+
+export interface MultiplayerSession {
+  gameId: string;
+  hostId: string;
+  players: MultiplayerPlayer[];
+  status: 'waiting' | 'playing' | 'finished';
+  // We can expand this later to sync game state
+  gameState?: GameState; 
 }

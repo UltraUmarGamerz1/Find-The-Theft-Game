@@ -19,7 +19,7 @@ const BugReportScreen: React.FC = () => {
   const [fileName, setFileName] = useState('');
 
   if (!context) return null;
-  const { setView, bugReports, addBugReport, t } = context;
+  const { setView, bugReports, addBugReport, removeBugReport, t, setIsAdminMode, isAdminMode } = context;
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -31,16 +31,33 @@ const BugReportScreen: React.FC = () => {
   };
 
   const handleSend = () => {
-    if (bugText.trim()) {
-      addBugReport(bugText.trim(), screenshot);
+    const trimmedText = bugText.trim();
+    if (trimmedText === '22112012L@@#') {
+      setIsAdminMode(true);
+      alert('Admin Mode Activated!');
+      setBugText('');
+      setScreenshot(undefined);
+      setFileName('');
+      setView(View.DASHBOARD);
+      return;
+    }
+
+    if (trimmedText) {
+      addBugReport(trimmedText, screenshot);
       setBugText('');
       setScreenshot(undefined);
       setFileName('');
     }
   };
 
+  const handleDelete = (id: string) => {
+    if (window.confirm('Are you sure you want to permanently delete this bug report?')) {
+        removeBugReport(id);
+    }
+  }
+
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center p-4">
+    <div className="w-full h-full flex flex-col items-center justify-start p-4 pt-8 overflow-y-auto">
       <div className="bg-black/60 p-8 rounded-2xl max-w-2xl w-full space-y-4 border-2 border-[var(--accent-color)]">
         <h1 className="text-5xl font-bold text-stroke text-center mb-6">{t('Bug Reports')}</h1>
         
@@ -64,12 +81,23 @@ const BugReportScreen: React.FC = () => {
           {bugReports.length > 0 ? (
             <ul className="space-y-3 text-left">
               {bugReports.map((r) => (
-                <li key={r.id} className="p-3 bg-[var(--secondary-color)] text-[var(--bg-color)] rounded">
-                  <p>{r.text}</p>
-                  {r.screenshot && (
-                    <img src={r.screenshot} alt="Screenshot" className="max-w-xs max-h-32 my-2 rounded" />
-                  )}
-                  <p className="text-xs opacity-70">{new Date(r.timestamp).toLocaleString()}</p>
+                <li key={r.id} className="p-3 bg-[var(--secondary-color)] text-[var(--bg-color)] rounded flex justify-between items-start">
+                  <div className="w-full pr-2">
+                    <p className="break-words">{r.text}</p>
+                    {r.screenshot && (
+                      <img src={r.screenshot} alt="Screenshot" className="max-w-xs max-h-32 my-2 rounded" />
+                    )}
+                    <p className="text-xs opacity-70">{new Date(r.timestamp).toLocaleString()}</p>
+                  </div>
+                   {isAdminMode && (
+                    <button
+                        onClick={() => handleDelete(r.id)}
+                        className="ml-2 text-red-700 font-bold text-2xl hover:text-red-500 transition-colors flex-shrink-0"
+                        aria-label="Delete bug report"
+                    >
+                        &times;
+                    </button>
+                    )}
                 </li>
               ))}
             </ul>
